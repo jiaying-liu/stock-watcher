@@ -1,0 +1,5 @@
+.stock-watcher-header {
+	display: flex;
+	padding: 0 24px;
+	justify-content: space-between;
+}
