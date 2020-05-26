@@ -8,7 +8,6 @@ def authenticate(func):
 	@wraps(func)
 	def wrapper(*args, **kwargs):
 		user_id = session.get('user_id', -1)
-		print('user id in decorator is ', user_id, file=sys.stdout)
 		user = User.find_user_by_id(user_id)
 		
 		if user is None:
