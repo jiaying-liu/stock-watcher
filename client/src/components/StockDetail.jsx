@@ -4,14 +4,18 @@ import axios from 'axios'
 import * as d3 from 'd3-format'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { addStockAlert } from '../actions/stock-alert'
+import { addStockAlert, fetchStockAlerts } from '../actions/stock-alert'
+import { fetchCurrentUser } from '../actions/current-user'
+import { green } from '@material-ui/core/colors'
 
 import {
 	Grid,
-	IconButton
+	IconButton,
+	Tooltip,
+	SvgIcon
 } from '@material-ui/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import StockAlertConfigDialog from './StockAlertConfigDialog'
 
 class StockDetail extends Component {
@@ -32,12 +36,33 @@ class StockDetail extends Component {
 		this.initialize()
 	}
 
-	async initialize () {
-		const stockDetails = await this.fetchStockDetails()
+	componentDidUpdate (prevProps) {
+		const prevSymbol = prevProps.match.params.symbol
+		const symbol = this.props.match.params.symbol
 
-		this.setState({
-			stockDetails
-		})
+		if (prevSymbol !== symbol) {
+			this.initialize()
+		}
+	}
+
+	async initialize () {
+		try {
+			if (!this.props.stockAlerts.length) {
+				if (!this.props.currentUser) {
+					await this.props.fetchCurrentUser()
+				}
+
+				this.props.fetchStockAlerts(this.props.currentUser.id)
+			}
+	
+			const stockDetails = await this.fetchStockDetails()
+
+			this.setState({
+				stockDetails
+			})
+		} catch (error) {
+			console.error(`Error while initializing Stock Details: ${error.message}`)
+		}
 	}
 
 	async fetchStockDetails () {
@@ -216,6 +241,57 @@ class StockDetail extends Component {
 		)
 	}
 
+	renderAddButton () {
+		if (!this.state.stockDetails) {
+			return null
+		}
+
+		const { stockDetails } = this.state
+		const { stockAlerts } = this.props
+		const stockDetailTicker = stockDetails.symbol.toLowerCase()
+		console.log('stock alerts are ', stockAlerts)
+		const hasUserSavedStockAlert = stockAlerts.some(stockAlert => stockAlert.stockTicker.toLowerCase() === stockDetailTicker)
+
+		if (hasUserSavedStockAlert) {
+			return (
+				<Tooltip
+					title="Saved"
+					arrow
+					style={{ marginLeft: '8px' }}
+				>
+					<IconButton>
+						<SvgIcon
+							style={{ color: green[500] }}
+						>
+							<FontAwesomeIcon
+								icon={faCheckCircle}
+							/>
+						</SvgIcon>
+					</IconButton>
+				</Tooltip>
+			)
+		}
+
+		return (
+			<Tooltip
+				title="Add"
+				arrow
+				style={{ marginLeft: '8px' }}
+			>
+				<IconButton
+					color="primary"
+					onClick={this.onAddStockAlertClick}
+				>
+					<SvgIcon>
+						<FontAwesomeIcon
+							icon={faPlusCircle}
+						/>
+					</SvgIcon>
+				</IconButton>
+			</Tooltip>
+		)
+	}
+
 	renderStockTitle () {
 		const { name } = this.state.stockDetails
 
@@ -224,15 +300,9 @@ class StockDetail extends Component {
 				<h1>
 					{name}
 				</h1>
-				<IconButton
-					color="primary"
-					style={{ marginRight: '8px' }}
-					onClick={this.onAddStockAlertClick}
-				>
-					<FontAwesomeIcon
-						icon={faPlusCircle}
-					/>
-				</IconButton>
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					{this.renderAddButton()}
+				</div>
 			</div>
 		)
 	}
@@ -270,13 +340,15 @@ class StockDetail extends Component {
 	}
 }
 
-function mapStateToProps ({ currentUser }) {
-	return { currentUser }
+function mapStateToProps ({ currentUser, stockAlerts }) {
+	return { currentUser, stockAlerts }
 }
 
 function mapDispatchToProps (dispatch) {
 	return bindActionCreators({
-		addStockAlert
+		fetchCurrentUser,
+		addStockAlert,
+		fetchStockAlerts
 	}, dispatch)
 }
 

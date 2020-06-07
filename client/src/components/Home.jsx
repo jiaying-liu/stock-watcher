@@ -4,9 +4,7 @@ import { bindActionCreators } from 'redux'
 import { fetchCurrentUser } from '../actions/current-user'
 import { withRouter } from 'react-router-dom'
 
-import StockSearchBar from './StockSearchBar'
 import StockAlertList from './StockAlertList'
-// import { Container } from '@material-ui/core'
 
 class Home extends Component {
 	async componentDidMount () {
@@ -32,12 +30,7 @@ class Home extends Component {
 		}
 
 		return (
-			<div style={{ marginTop: '16px'}}>
-				<StockSearchBar />
-				<div style={{ marginTop: '24px' }}>
-					<StockAlertList />
-				</div>
-			</div>
+			<StockAlertList />
 		)
 	}
 }

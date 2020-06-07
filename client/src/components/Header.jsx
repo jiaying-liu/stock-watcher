@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux'
 import { AppBar, Button } from '@material-ui/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons'
+import StockSearchBar from './StockSearchBar'
 
 import './Header.css'
 
@@ -23,23 +24,28 @@ class Header extends Component {
 		}
 
 		return (
-			<AppBar position="relative">
-				<div className="stock-watcher-header">
-					<Link
-						to="/"
-						style={{ color: 'inherit', textDecoration: 'inherit' }}
-					>
-						<h3>Stock Watcher</h3>
-					</Link>
-					<Button style={{ color: 'white' }}>
-						<FontAwesomeIcon
-							icon={faUserCircle} size="2x"
-							style={{marginRight: "8px"}}
-						/>
-						{this.props.currentUser.name}
-					</Button>
+			<div>
+				<AppBar position="relative">
+					<div className="stock-watcher-header">
+						<Link
+							to="/"
+							style={{ color: 'inherit', textDecoration: 'inherit' }}
+						>
+							<h3>Stock Watcher</h3>
+						</Link>
+						<Button style={{ color: 'white' }}>
+							<FontAwesomeIcon
+								icon={faUserCircle} size="2x"
+								style={{marginRight: "8px"}}
+							/>
+							{this.props.currentUser.name}
+						</Button>
+					</div>
+				</AppBar>
+				<div style={{ margin: '16px 16px 0px' }}>
+					<StockSearchBar />
 				</div>
-			</AppBar>
+			</div>
 		)
 	}
 }

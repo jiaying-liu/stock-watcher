@@ -67,7 +67,9 @@ class StockSearchBar extends Component {
 	}
 
 	onStockSelect (stock) {
-		this.props.history.push(`/stocks/${stock.symbol.toLowerCase()}`)
+		if (stock) {
+			this.props.history.push(`/stocks/${stock.symbol.toLowerCase()}`)
+		}
 	}
 
 	renderInput (params) {
