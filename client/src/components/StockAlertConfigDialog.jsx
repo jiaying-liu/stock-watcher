@@ -1,7 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { addStockAlert } from '../actions/stock-alert'
 import PropTypes from 'prop-types'
 
 import {
@@ -168,14 +165,4 @@ StockAlertConfigDialog.propTypes = {
 	title: PropTypes.string
 }
 
-function mapStateToProps ({ currentUser }) {
-	return { currentUser }
-}
-
-function mapDispatchToProps (dispatch) {
-	return bindActionCreators({
-		addStockAlert
-	}, dispatch)
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(StockAlertConfigDialog)
+export default StockAlertConfigDialog

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {
 	Dialog,
@@ -8,56 +8,48 @@ import {
 	Button
 } from '@material-ui/core'
 
-class DeleteStockAlertDialog extends Component {
-	constructor () {
-		super()
-		this.onClose = this.onClose.bind(this)
-		this.onStockAlertDelete = this.onStockAlertDelete.bind(this)
-	}
-
-	async onStockAlertDelete () {
-		if (this.props.onStockAlertDelete) {
-			this.props.onStockAlertDelete()
+function DeleteStockAlertDialog (props) {
+	function onStockAlertDelete () {
+		if (props.onStockAlertDelete) {
+			props.onStockAlertDelete()
 		}
 	}
 
-	onClose () {
-		if (this.props.onClose) {
-			this.props.onClose()
+	function onClose () {
+		if (props.onClose) {
+			props.onClose()
 		}
 	}
 
-	render () {
-		const { stockAlert } = this.props
+	const { stockAlert } = props
 
-		if (stockAlert) {
-			const { stockName, stockTicker } = stockAlert
-			return (
-				<Dialog
-					open={this.props.open}
-					onClose={this.onClose}
-				>
-					<DialogTitle>Confirm Delete</DialogTitle>
-					<DialogContent>
-						Are you sure you want to delete the stock alert for {stockTicker} ({stockName})?
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={this.onClose}>
-							Cancel
-						</Button>
-						<Button
-							color='secondary'
-							onClick={this.onStockAlertDelete}
-						>
-							Delete
-						</Button>
-					</DialogActions>
-				</Dialog>
-			)
-		}
-
-		return null
+	if (stockAlert) {
+		const { stockName, stockTicker } = stockAlert
+		return (
+			<Dialog
+				open={props.open}
+				onClose={onClose}
+			>
+				<DialogTitle>Confirm Delete</DialogTitle>
+				<DialogContent>
+					Are you sure you want to delete the stock alert for {stockTicker} ({stockName})?
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={onClose}>
+						Cancel
+					</Button>
+					<Button
+						color='secondary'
+						onClick={onStockAlertDelete}
+					>
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+		)
 	}
+
+	return null
 }
 
 DeleteStockAlertDialog.propTypes = {

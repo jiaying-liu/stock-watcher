@@ -18,18 +18,16 @@ const store = createStore(reducers, {}, applyMiddleware(reduxThunk))
 function App () {
   return (
     <Provider store={store}>
-      <div className="stock-watcher-root">
-        <Router>
-          <Header />
-          <Container className="stock-watcher-root">
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route exact path='/stocks/:symbol' component={StockDetail} />
-              <Route exact path="/login" component={Login} />
-            </Switch>
-          </Container>
-        </Router>
-      </div>
+			<Router>
+				<Header />
+				<Container className="stock-watcher-root">
+					<Switch>
+						<Route exact path="/" component={Home} />
+						<Route exact path='/stocks/:symbol' component={StockDetail} />
+						<Route exact path="/login" component={Login} />
+					</Switch>
+				</Container>
+			</Router>
     </Provider>
   )
 }

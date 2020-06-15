@@ -17,6 +17,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import StockAlertConfigDialog from './StockAlertConfigDialog'
+import StockChart from './StockChart'
 
 class StockDetail extends Component {
 	constructor () {
@@ -324,6 +325,10 @@ class StockDetail extends Component {
 				<div style={{ fontSize: '32px' }}>
 					{this.formatCurrencyValue(price)}
 				</div>
+				<StockChart
+					symbol={symbol}
+					height={300}
+				/>
 				{this.renderStats()}
 				{this.renderDescription()}
 				<StockAlertConfigDialog
