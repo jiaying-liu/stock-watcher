@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from ..decorators import authenticate
-from iexfinance.stocks import Stock
+from iexfinance.stocks import Stock, get_historical_intraday
 from iexfinance.refdata import get_symbols
 
 import os
@@ -57,3 +57,24 @@ class StockDetail(Resource):
 		except Exception as e:
 			print('Error while retrieving company', e, file=sys.stderr)
 			return { 'message': 'Could not find company' }, 500
+
+class StockChartDay(Resource):
+	method_decorators = [authenticate]
+
+	parser = reqparse.RequestParser()
+	parser.add_argument(
+		'symbol',
+		type=str,
+		required=True,
+		help="Must include stock ticker symbol!"
+	)
+
+	def get(self):
+		try:
+			symbol = StockChartDay.parser.parse_args()['symbol']
+			chart_data = get_historical_intraday(symbol)
+
+			return chart_data, 200
+		except Exception as e:
+			print('Error while retrieving Stock Chart Data for Day', e, file=sys.stderr)
+			return { 'message': 'Server error while retrieving stock chart data' }, 500
