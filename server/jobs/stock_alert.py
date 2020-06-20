@@ -11,6 +11,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 from datetime import datetime, time
+from pytz import utc
 
 class StockAlert:
 	def __init__(self, stock_ticker, stock_name, condition, price, user_id):
@@ -166,10 +167,10 @@ def send_stock_alerts():
 def schedule_stock_alerts():
 	global user_email_store
 	try:
-		scheduler = BackgroundScheduler()
+		scheduler = BackgroundScheduler(timezone=utc)
 		_empty_user_email_store(user_email_store)
-		cron1 = CronTrigger(day_of_week='mon-fri', hour='13', minute='30,45', timezone='UTC')
-		cron2 = CronTrigger(day_of_week='mon-fri', hour='14-20', minute='*/15', timezone='UTC')
+		cron1 = CronTrigger(day_of_week='mon-fri', hour='13', minute='30,45')
+		cron2 = CronTrigger(day_of_week='mon-fri', hour='14-20', minute='*/15')
 		trigger = OrTrigger([cron1, cron2])
 		scheduler.add_job(send_stock_alerts, trigger)
 		scheduler.add_job(lambda: _empty_user_email_store(user_email_store), 'cron', day_of_week='mon-fri', hour='13', minute=30)
