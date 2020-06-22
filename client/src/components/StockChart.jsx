@@ -73,51 +73,54 @@ function StockChart (props) {
 			.sort((chartPointA, chartPointB) => chartPointA.x - chartPointB.x)
 	}
 
-	async function fetchStockChartData () {
-		try {
-			const { symbol } = props
-			let dateAgg = '1d'
-
-			switch (timeRange) {
-				case FIVE_DAYS:
-					dateAgg = '5d'
-					break
-				case MONTH:
-					dateAgg = '1m'
-					break
-				case SIX_MONTHS:
-					dateAgg = '6m'
-					break
-				case YEAR:
-					dateAgg = '1y'
-					break
-				case FIVE_YEARS:
-					dateAgg = '5y'
-			}
-
-			const chartData = (await axios.get(`${process.env.REACT_APP_API_URI}/stocks/chart/${dateAgg}`, {
-				params: {
-					symbol
-				}
-			})).data
-
-			return chartData
-		} catch (error) {
-			console.error(`Error while fetching stock chart data: ${error.message}`)
-		}
-	}
-
-	async function initializeChart () {
-		try {
-			const newChartData = await fetchStockChartData()
-
-			setChartData(newChartData)
-		} catch (error) {
-			console.error(`Error while initializing chart: ${error.message}`)
-		}
-	}
-
 	useEffect(() => {
+		async function fetchStockChartData () {
+			try {
+				let dateAgg = ''
+	
+				switch (timeRange) {
+					case FIVE_DAYS:
+						dateAgg = '5d'
+						break
+					case MONTH:
+						dateAgg = '1m'
+						break
+					case SIX_MONTHS:
+						dateAgg = '6m'
+						break
+					case YEAR:
+						dateAgg = '1y'
+						break
+					case FIVE_YEARS:
+						dateAgg = '5y'
+						break
+					default:
+						dateAgg = '1d'
+				}
+	
+				const chartData = (await axios.get(`${process.env.REACT_APP_API_URI}/stocks/chart/${dateAgg}`, {
+					params: {
+						symbol: props.symbol
+					}
+				})).data
+	
+				return chartData
+			} catch (error) {
+				console.error(`Error while fetching stock chart data: ${error.message}`)
+				throw error
+			}
+		}
+
+		async function initializeChart () {
+			try {
+				const newChartData = await fetchStockChartData()
+	
+				setChartData(newChartData)
+			} catch (error) {
+				console.error(`Error while initializing chart: ${error.message}`)
+			}
+		}
+	
 		initializeChart()
 	}, [props.symbol, timeRange])
 
