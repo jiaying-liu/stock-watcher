@@ -169,8 +169,8 @@ def schedule_stock_alerts():
 	try:
 		scheduler = BackgroundScheduler(timezone=utc)
 		_empty_user_email_store(user_email_store)
-		cron1 = CronTrigger(day_of_week='mon-fri', hour='13', minute='30,45')
-		cron2 = CronTrigger(day_of_week='mon-fri', hour='14-20', minute='*/15')
+		cron1 = CronTrigger(day_of_week='mon-fri', hour='13', minute='30,35,40,45,50,55')
+		cron2 = CronTrigger(day_of_week='mon-fri', hour='14-20', minute='*/5')
 		trigger = OrTrigger([cron1, cron2])
 		scheduler.add_job(send_stock_alerts, trigger)
 		scheduler.add_job(lambda: _empty_user_email_store(user_email_store), 'cron', day_of_week='mon-fri', hour='13', minute=30)
