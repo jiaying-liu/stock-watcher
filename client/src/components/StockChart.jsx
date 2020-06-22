@@ -107,7 +107,7 @@ function StockChart (props) {
 		}
 	}
 
-	async function initializeChart () {	
+	async function initializeChart () {
 		try {
 			const newChartData = await fetchStockChartData()
 
