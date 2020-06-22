@@ -4,7 +4,7 @@ from flask_cors import CORS
 from .db import db
 from .resources.auth import Login
 from .resources.user import CurrentUser
-from .resources.stock import StockDetail, StockList, StockChartDay
+from .resources.stock import StockDetail, StockList, StockChart
 from .resources.stock_alert import UserStockAlertList, StockAlertResource
 from .jobs.stock_alert import schedule_stock_alerts
 from dotenv import load_dotenv
@@ -35,7 +35,7 @@ api.add_resource(UserStockAlertList, '/api/users/<int:user_id>/stock-alerts')
 api.add_resource(StockAlertResource, '/api/stock-alerts/<int:stock_alert_id>')
 api.add_resource(StockDetail, '/api/stocks/details')
 api.add_resource(StockList, '/api/stocks')
-api.add_resource(StockChartDay, '/api/stocks/chart/day')
+api.add_resource(StockChart, '/api/stocks/chart/<string:date_agg>')
 
 app.run(port=os.getenv('PORT', 5000))
 

@@ -77,7 +77,7 @@ class UserStockAlertList(Resource):
 	def get(self, user_id):
 		try:
 			stock_alerts = StockAlert.get_stock_alerts_for_user(user_id)
-			print('stock alerts are ', stock_alerts)
+			
 			stock_alerts_json = list(map(lambda stock_alert: stock_alert.to_json(), stock_alerts))
 
 			return stock_alerts_json, 200

@@ -7,6 +7,13 @@ import { bindActionCreators } from 'redux'
 import { addStockAlert, fetchStockAlerts } from '../actions/stock-alert'
 import { fetchCurrentUser } from '../actions/current-user'
 import { green } from '@material-ui/core/colors'
+import {
+	formatLargeCurrencyValue,
+	formatCurrencyValue,
+	formatLargeNumber,
+	formatPercentageValue,
+	formatNumberWithComma
+} from '../helpers/format-values'
 
 import {
 	Grid,
@@ -166,7 +173,7 @@ class StockDetail extends Component {
 					<Grid item>
 						<b>Employees</b>
 						<div>
-							{this.formatNumberWithComma(employees)}
+							{formatNumberWithComma(employees)}
 						</div>
 					</Grid>
 				</Grid>
@@ -198,31 +205,31 @@ class StockDetail extends Component {
 						<Grid item>
 							<b>Market Cap</b>
 							<div>
-								{this.formatLargeCurrencyValue(marketCap)}
+								{formatLargeCurrencyValue(marketCap)}
 							</div>
 						</Grid>
 						<Grid item>
 							<b>Volume</b>
 							<div>
-								{this.formatLargeNumber(volume)}
+								{formatLargeNumber(volume)}
 							</div>
 						</Grid>
 						<Grid item>
 							<b>Average Volume</b>
 							<div>
-								{this.formatLargeNumber(avgVolume)}
+								{formatLargeNumber(avgVolume)}
 							</div>
 						</Grid>
 						<Grid item>
 							<b>52 Week High</b>
 							<div>
-								{this.formatCurrencyValue(week52High)}
+								{formatCurrencyValue(week52High)}
 							</div>
 						</Grid>
 						<Grid item>
 							<b>52 Week Low</b>
 							<div>
-								{this.formatCurrencyValue(week52Low)}
+								{formatCurrencyValue(week52Low)}
 							</div>
 						</Grid>
 						<Grid item>
@@ -234,7 +241,7 @@ class StockDetail extends Component {
 						<Grid item>
 							<b>Dividend Yield</b>
 							<div>
-								{(dividendYield && this.formatPercentageValue(dividendYield)) || '--'}
+								{(dividendYield && formatPercentageValue(dividendYield)) || '--'}
 							</div>
 						</Grid>
 					</Grid>
@@ -250,7 +257,6 @@ class StockDetail extends Component {
 		const { stockDetails } = this.state
 		const { stockAlerts } = this.props
 		const stockDetailTicker = stockDetails.symbol.toLowerCase()
-		console.log('stock alerts are ', stockAlerts)
 		const hasUserSavedStockAlert = stockAlerts.some(stockAlert => stockAlert.stockTicker.toLowerCase() === stockDetailTicker)
 
 		if (hasUserSavedStockAlert) {
@@ -323,7 +329,7 @@ class StockDetail extends Component {
 			<div>
 				{this.renderStockTitle()}
 				<div style={{ fontSize: '32px' }}>
-					{this.formatCurrencyValue(price)}
+					{formatCurrencyValue(price)}
 				</div>
 				<StockChart
 					symbol={symbol}
