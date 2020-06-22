@@ -80,7 +80,7 @@ class StockChart(Resource):
 		try:
 			symbol = StockChart.parser.parse_args()['symbol']
 			chart_data = self.get_chart_data(symbol, date_agg)
-			
+
 			return chart_data, 200
 		except Exception as e:
 			print('Error while retrieving Stock Chart Data for Day', e, file=sys.stderr)
