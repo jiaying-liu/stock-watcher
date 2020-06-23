@@ -2,8 +2,10 @@ from flask import session
 from flask_restful import Resource, reqparse
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from ..helpers.redis import get_redis
 import sys
 import os
+import secrets
 
 from ..models.user import User
 
@@ -37,7 +39,10 @@ class Login(Resource):
 				user = User.find_user_by_email(user_email)
 			
 			session.permanent = True
-			session['user_id'] = user.id
+			# session['user_id'] = user.id
+			session_id = secrets.token_urlsafe()
+			get_redis().set(f'session:{session_id}', user.id)
+			session['session_id'] = session_id
 
 			return { "message": "Login Success" }, 200
 		except Exception as e:
@@ -46,5 +51,7 @@ class Login(Resource):
 
 class Logout(Resource):
 	def post(self):
+		session_id = session.get('session_id', '')
+		get_redis().delete(f'session:{session_id}')
 		session.clear()
 		return { "message": "Logout Success" }, 200

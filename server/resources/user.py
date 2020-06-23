@@ -3,6 +3,7 @@ from flask import session
 from flask_cors import cross_origin
 from ..models.user import User
 from ..decorators import authenticate
+from ..helpers.redis import get_redis
 import sys
 
 class CurrentUser(Resource):
@@ -10,7 +11,12 @@ class CurrentUser(Resource):
 	
 	def get(self):
 		try:
-			user_id = session.get('user_id')
+			session_id = session.get('session_id', '')
+			user_id = get_redis().get(f'session:{session_id}')
+
+			if user_id is None:
+				raise Exception('Invalid Session ID!')
+			
 			user = User.find_user_by_id(user_id)
 
 			if user is None:

@@ -28,10 +28,18 @@ class StockAlert:
 		else:
 			return price_in_dollar <= price
 
-def _empty_user_email_store(user_email_store):
-	user_email_store.flushdb
+def _get_user_ids():
+	return list(map(
+		lambda row: row['id'],
+		run_query('SELECT id FROM USER')
+	))
 
-def _connect_to_user_email_store():
+def _refresh_user_triggered_stock_alert_tracker(redis_store):
+	user_ids = _get_user_ids()
+	keys = list(map(lambda user_id: f"user:{user_id}:triggered_stock_alerts", user_ids))
+	redis_store.delete(*keys)
+
+def connect_to_redis():
 	return redis.Redis(
 		host=os.getenv('REDIS_HOST'),
 		port=int(os.getenv('REDIS_PORT')),
@@ -40,7 +48,7 @@ def _connect_to_user_email_store():
 		decode_responses=True
 	)
 
-user_email_store = _connect_to_user_email_store()
+redis_store = connect_to_redis()
 
 def _get_stock_alerts():
 	stock_alerts = list(map(
@@ -122,19 +130,20 @@ async def _get_current_stock_prices(stock_tickers):
 	return reduce(_add_to_stock_price_dict, stock_prices, dict())
 
 def _send_alert_emails(user_stock_alert_dict, stock_price_dict):
-	global user_email_store
+	global redis_store
 
 	for user_id in user_stock_alert_dict:
 		email_message = ''
 		email = user_stock_alert_dict[user_id]['email']
 		stock_alerts = user_stock_alert_dict[user_id]['stock_alerts']
+		redis_stock_alert_key = f"user:{user_id}:triggered_stock_alerts"
 
 		for stock_alert in stock_alerts:
 			current_price = stock_price_dict[stock_alert.stock_ticker]
 
-			if stock_alert.does_price_cross_condition(current_price) and (not user_email_store.exists(user_id) or stock_alert.stock_ticker not in user_email_store.smembers(user_id)):
+			if stock_alert.does_price_cross_condition(current_price) and stock_alert.stock_ticker not in redis_store.smembers(redis_stock_alert_key):
 				email_message += f"{stock_alert.stock_name} ({stock_alert.stock_ticker}): ${current_price}\n"
-				user_email_store.sadd(user_id, stock_alert.stock_ticker)
+				redis_store.sadd(redis_stock_alert_key, stock_alert.stock_ticker)
 		
 		if len(email_message) > 0:
 			sendgrid_mail = Mail(
@@ -165,15 +174,15 @@ def send_stock_alerts():
 	asyncio.run(_send_stock_alerts())
 
 def schedule_stock_alerts():
-	global user_email_store
+	global redis_store
 	try:
 		scheduler = BackgroundScheduler(timezone=utc)
-		_empty_user_email_store(user_email_store)
-		cron1 = CronTrigger(day_of_week='mon-fri', hour='13', minute='30,35,40,45,50,55')
-		cron2 = CronTrigger(day_of_week='mon-fri', hour='14-20', minute='*/5')
+		_refresh_user_triggered_stock_alert_tracker(redis_store)
+		cron1 = CronTrigger(day_of_week='mon-fri', hour='13', minute='30,35,40,45,50,55', timezone=utc)
+		cron2 = CronTrigger(day_of_week='mon-fri', hour='14-20', minute='*/5', timezone=utc)
 		trigger = OrTrigger([cron1, cron2])
 		scheduler.add_job(send_stock_alerts, trigger)
-		scheduler.add_job(lambda: _empty_user_email_store(user_email_store), 'cron', day_of_week='mon-fri', hour='13', minute=30)
+		scheduler.add_job(lambda: _refresh_user_triggered_stock_alert_tracker(redis_store), 'cron', day_of_week='mon-fri', hour='13', minute=30)
 		scheduler.start()
 	except Exception as e:
 		print('Error while scheduling alerts', e, file=sys.stderr)

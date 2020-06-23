@@ -8,6 +8,18 @@ import { bindActionCreators } from 'redux'
 import { withRouter } from 'react-router-dom'
 
 class Login extends Component {
+	componentDidMount () {
+		if (this.props.currentUser) {
+			this.props.history.push('/')
+		}
+	}
+
+	componentDidUpdate () {
+		if (this.props.currentUser) {
+			this.props.history.push('/')
+		}
+	}
+
 	async onGoogleResponse (response) {
 		try {
 			await axios.post(`${process.env.REACT_APP_API_URI}/login`,
@@ -23,10 +35,6 @@ class Login extends Component {
 	}
 
 	render () {
-		if (this.props.currentUser) {
-			this.props.history.push('/')
-		}
-
 		return (
 			<div>
 				<h1>Set Your Stock Alerts</h1>
