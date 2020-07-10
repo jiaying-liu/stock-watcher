@@ -1,3 +1,7 @@
 .stock-alert-table-header th {
 	font-weight: bold;
 }
+
+.stock-alert-row {
+	cursor: pointer;
+}

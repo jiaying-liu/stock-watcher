@@ -7,6 +7,8 @@ import { fetchCurrentUser } from '../actions/current-user'
 import { bindActionCreators } from 'redux'
 import { withRouter } from 'react-router-dom'
 
+import './Login.css'
+
 class Login extends Component {
 	componentDidMount () {
 		if (this.props.currentUser) {
@@ -36,8 +38,8 @@ class Login extends Component {
 
 	render () {
 		return (
-			<div>
-				<h1>Set Your Stock Alerts</h1>
+			<div className="login-content">
+				<h1>Stock Alert Watcher</h1>
 				<GoogleLogin
 					clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
 					buttonText='Login with Google'

@@ -18,6 +18,7 @@ import DeleteStockAlertDialog from './DeleteStockAlertDialog'
 import { connect } from 'react-redux'
 import { fetchStockAlerts, updateStockAlert, deleteStockAlert } from '../actions/stock-alert'
 import { bindActionCreators } from 'redux'
+import { withRouter } from 'react-router-dom'
 import * as d3 from 'd3-format'
 
 import './StockAlertList.css'
@@ -44,6 +45,10 @@ class StockAlertList extends Component {
 
 	componentDidMount () {
 		this.fetchStockAlerts()
+	}
+
+	goToStockDetail (stockTicker) {
+		this.props.history.push(`/stocks/${stockTicker.toLowerCase()}`)
 	}
 
 	async fetchStockAlerts () {
@@ -104,6 +109,7 @@ class StockAlertList extends Component {
 	}
 
 	onContextMenuButtonClick (event, stockAlert) {
+		event.stopPropagation()
 		this.setState({
 			selectedStockAlert: stockAlert,
 			contextMenuAnchorEl: event.currentTarget
@@ -128,7 +134,7 @@ class StockAlertList extends Component {
 						Condition
 					</TableCell>
 					<TableCell>
-						Price ($)
+						Target Price ($)
 					</TableCell>
 					<TableCell />
 				</TableRow>
@@ -138,7 +144,11 @@ class StockAlertList extends Component {
 
 	renderTableBodyRows () {
 		return this.props.stockAlerts.map((stockAlert, index) => (
-			<TableRow key={index}>
+			<TableRow
+				key={index}
+				className="stock-alert-row"
+				onClick={() => this.goToStockDetail(stockAlert.stockTicker)}
+			>
 				<TableCell>
 					{stockAlert.stockTicker}
 				</TableCell>
@@ -282,4 +292,4 @@ function mapDispatchToProps (dispatch) {
 	}, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(StockAlertList)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StockAlertList))

@@ -12,6 +12,7 @@ import sys
 import pandas
 import asyncio
 import functools
+import holidays
 
 class StockList(Resource):
 	method_decorators = [authenticate]
@@ -153,4 +154,6 @@ class StockChart(Resource):
 		)
 	
 	def is_business_day(self, date):
-		return bool(len(pandas.bdate_range(date, date)))
+		us_holidays = holidays.US()
+
+		return bool(len(pandas.bdate_range(date, date)) and not date.strftime('%Y-%m-%d') in us_holidays)

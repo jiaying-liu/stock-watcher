@@ -2,7 +2,7 @@ from flask import Flask, session
 from flask_restful import Resource, Api
 from flask_cors import CORS
 from .db import db
-from .resources.auth import Login
+from .resources.auth import Login, Logout
 from .resources.user import CurrentUser
 from .resources.stock import StockDetail, StockList, StockChart
 from .resources.stock_alert import UserStockAlertList, StockAlertResource
@@ -30,6 +30,7 @@ def hello():
     return 'Hello World'
 
 api.add_resource(Login, '/api/login')
+api.add_resource(Logout, '/api/logout')
 api.add_resource(CurrentUser, '/api/current-user')
 api.add_resource(UserStockAlertList, '/api/users/<int:user_id>/stock-alerts')
 api.add_resource(StockAlertResource, '/api/stock-alerts/<int:stock_alert_id>')
